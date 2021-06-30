@@ -42,7 +42,10 @@ int main() {
     The usual arithmetic conversions are performed on the operands.
     The result of the / operator is the quotient from the division of the first operand by the second; 
     the result of the % operator is the remainder. 
-    In both operations, if the value of the second operand is zero, the behavior is undefined.*/
+    In both operations, if the value of the second operand is zero, the behavior is undefined.
+    An annoying problem with integer division is that different compilers have different opinions on the value of i / j and i % j,
+    when either one or both of the integers i or j are negative, 
+    so it is better to avoid integer division with negative numbers.*/
     std::cout << "Division: " << i / j << "\n";
     std::cout << "Modulo: " << i % j << "\n";
 
