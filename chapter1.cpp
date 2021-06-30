@@ -57,3 +57,12 @@ int main() {
 
     return 0;
 }
+
+// NOTE ON NUMBER SIZES
+// Note on integer sizes: 
+// sizeof(short) is at least 2 bytes
+// sizeof(long) is at least 4 bytes
+// sizeof(short) ≤ sizeof(int) ≤ sizeof(long)
+// Note on floating point number sizes:
+// sizeof(float) ≤ sizeof(double)
+// most compilers reserve 4 bytes to represent a float and 8 bytes to represent a double
