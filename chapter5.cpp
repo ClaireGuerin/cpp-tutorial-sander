@@ -111,12 +111,12 @@ vector<double> ricker(const double r) {
 // SPAGHETTI CODE
 // VERSION 1:
 
-int spaghetti1() {
+void spaghetti1() {
     int i = 0;
     test:
         if(i < 5)
             goto increment;
-        return 0;
+        return;
     increment:
         cout << i << endl;
         ++i;
