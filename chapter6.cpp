@@ -29,6 +29,31 @@ The compiler may ignore the request to expand a function inline. This is particu
 - if the function calls itself, or 
  -if it contains static variables. */
 
+// Static function variables.
+/* Consider the following program that reports the running average of a sequence of weight measurements entered by the user. 
+Rewrite the code, and apply static variables to separate the task of requesting input from the user from the task of keeping track of the running average.
+Delegate both to their own function. */
+
+// Computing the factorial of a number.
+/* Write an iterative and a recursive version of a function that computes the factorial n! of an integer number n ≥ 0. 
+Recall that 0! = 1, by definition, and that n! = n * (n − 1)! = n * (n − 1) * ... * 2 * 1, for all n > 0. 
+When testing the functions, use only small values of n to avoid integer overflow. */
+
+// An efficient power function for integer powers. 
+/* Write a function *** double pow(const int&, const int&) ***
+that overloads the standard *** double pow(const double&, const double&) *** function from the library cmath. 
+Your function should return the value of x^n for arbitrary integer values x and integer powers n.
+
+Attempt to code a recursive implementation, based on the following recursive definition of x^n :
+= 1/(x^{−n}) if n < 0;
+= 1 if n = 0;
+= x * x^{n-1} if n > 0 and n is odd;
+= (x^{n/2})^2 otherwise.
+
+If you are having trouble to code the recursion, fall back to an iterative implementation. Compute
+pow(2, -4) and pow(2.0, -4.0) , and identify which pow() function is executed in each case.
+*/
+
 void simplify(int, int); // global declaration: simplify() is recognised from this point onwards
 
 void swap(double &x, double &y) {
@@ -87,8 +112,83 @@ void removeDuplicates(vector<int> &vec) {
 
 void printOutVector(const vector<int> vec) {
     for (int i = 0; i < vec.size(); ++i) {
-        cout << vec[i] << " ";
+        std::cout << vec[i] << " ";
     }
+}
+
+double requestInput() {
+    
+    // read measurement value
+    std::cout << "Next value : ";
+    double dWeight;
+    cin >> dWeight;
+
+    return dWeight;
+
+}
+
+bool averageInput() {
+
+    // request input
+    double newVal = requestInput();
+
+    static int n = 1;
+    static double dSum = 0.0;
+    static bool running = true;
+
+    if (newVal >= 0.0) {
+        dSum += newVal;
+        //  report running average
+        std::cout << "The running average of the values entered thus far is : "
+                << dSum / n << std::endl;
+        
+        ++n;
+    } else {
+        std::cout << "End of program.\n";
+        running = false;
+    }
+
+    return running;
+}
+
+int iterativeFactorial(int n) {
+    //0! = 1
+    // n! = n * (n − 1)! = n * (n − 1) * ... * 2 * 1
+
+    int fac = 1;
+
+    while (n > 0) {
+        fac *= n;
+        --n;
+    }
+
+    return fac;
+
+}
+
+int recursiveFactorial(const int n) {
+    //0! = 1
+    // n! = n * (n − 1)! = n * (n − 1) * ... * 2 * 1
+
+    return (n == 0) ? 1 : n * recursiveFactorial(n - 1);
+}
+
+double pow(const int &x, const int &n) {
+
+    double power;
+
+    if (n < 0) {
+        power = 1 / pow(x, - n);
+    } else if (n == 0) {
+        power = 1;
+    } else if (n > 0 && (n % 2) != 0) {
+        power = x * pow(x, n - 1);
+    } else {
+        double sqroot = pow(x, n / 2.0);
+        power =  sqroot * sqroot;
+    }
+
+    return power;
 }
 
 int main() {
@@ -100,16 +200,16 @@ int main() {
     double x = 1.0, y = 2.0;
     
     // show values
-    cout << "in main() : x = " << x << ", y = " << y << endl;
+    std::cout << "in main() : x = " << x << ", y = " << y << endl;
 
     // call swap() to swap values
     swap(x, y);
 
     // show values again
-    cout << "in main() : x = " << x << ", y = " << y << endl;
+    std::cout << "in main() : x = " << x << ", y = " << y << endl;
 
     // MINIMAL WORKING EXAMPLE OF REFERENCE
-    cout << "Referencing &j = i \n";
+    std::cout << "Referencing &j = i \n";
     int i = 0;
     int &j = i;
     std::cout << "i = " << i << "; j = " << j << std::endl;
@@ -132,26 +232,47 @@ int main() {
 
     vector<double> vec1 = {1,23,45,98,789};
     vector<double> vec2 = {1,300,45,98,89};
-    cout << "The largest element in vector 1 = {1,23,45,98,789} is: " << largest(vec1) << "\n"
+    std::cout << "The largest element in vector 1 = {1,23,45,98,789} is: " << largest(vec1) << "\n"
         << "The largest element in vector 2 = {1,300,45,98,89} is: " << largest(vec2) << "\n";
 
     // REMOVE DUPLICATES FROM VECTOR
 
     vector<int> vec3 = {1,2,2,3,4,5,5,6};
-    cout << "\n Vector 3 = " ;
+    std::cout << "\n Vector 3 = " ;
     printOutVector(vec3);
-    cout << "\n Removing duplicates: ";
+    std::cout << "\n Removing duplicates: ";
     removeDuplicates(vec3);
     printOutVector(vec3);
 
     vector<int> vec4 = {1,300,1,45,98,89,89};
-    cout << "\n Vector 4 = " ;
+    std::cout << "\n Vector 4 = " ;
     printOutVector(vec4);
-    cout << "\n Removing duplicates: ";
+    std::cout << "\n Removing duplicates: ";
     removeDuplicates(vec4);
     printOutVector(vec4);
-    cout << "\n";
+    std::cout << "\n";
+
+    // RUNNING AVERAGE INPUT
+
+    std::cout << "Enter a series of weight measurements, or a negative value to stop." << std::endl;
+    bool thisIsRunning = true;
+    while (thisIsRunning) {
+        thisIsRunning = averageInput();
+    }
     
+    // FACTORIAL
+    std::cout << "Factorial 3 = " << iterativeFactorial(3) << " (iterative) " << recursiveFactorial(3) << " (recursive)" << "\n"
+        << "Factorial 4 = " << iterativeFactorial(4) << " (iterative) " << recursiveFactorial(4) << " (recursive)" << "\n"
+        << "Factorial 5 = " << iterativeFactorial(5) << " (iterative) " << recursiveFactorial(5) << " (recursive)" << "\n"
+        << "Factorial 6 = " << iterativeFactorial(6) << " (iterative) " << recursiveFactorial(6) << " (recursive)" << "\n";
+
+    // OVERLOAD POWER FUNCTION WITH INTEGERS
+
+    std::cout << "5 to the power of -2: " << pow(5, -2) << "\n"
+            << "5 to the power of 0: " << pow(5, 0) << "\n"
+            << "5 to the power of 3: " << pow(5, 3) << "\n"
+            << "5 to the power of 2: " << pow(5, 2) << "\n";
+
     // terminate program
     return 0;
 }
