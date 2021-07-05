@@ -17,10 +17,12 @@ convert uppercase letters to lowercase and vice-versa. Code your own version of 
 and that returns the RNA sequence transcribed from it (also written in the 5’ to 3’ direction in a std::string object). 
 To test your program, apply the function to a short sequence, such as CGTCACAGATTAAGGTATACCATT and print the result to the screen. */
 
+// RNA translation.
+/* Extend your solution to the previous exercise with a function that can read an RNA sequence, 
+and that lists the separate codons that it contains, starting from the start codon (AUG), until a stop codon (UAG, UGA or UAA) is encountered. */
+
 void alphabet() {
-    char letter;
-    for (int i = 65; i < 91; ++i) {
-        letter = i;
+    for (char letter = 65; letter < 91; ++letter) {
         cout << letter << "\n";
     }
 }
@@ -51,12 +53,86 @@ std::string transcribe(const std::string &dna) {
                 break;
             case 71:
                 rna.push_back(67);
+                break;
             default:
-                cout << "Invalid dna strand. Input data as ATCG\n";
+                cout << "Invalid dna strand: " << dna[i] << ". Input data as ATCG\n";
         }
     }
 
     return rna;
+}
+
+std::string translate(const std::string &rna) {
+
+    std::string prot;
+    int startPos;
+
+    // find start codon (AUG):
+
+    for (int i = 0; i < rna.size() - 3; ++i) {
+        if (rna.substr(i, 3) == "AUG") {
+            startPos = i;
+            break;
+        } 
+    }
+
+    // List codons until stop codon (UAG, UGA or UAA)
+
+    for (int i = startPos; i <= rna.size() - 3; i += 3) {
+        std::string codon = rna.substr(i, 3);
+        std::string codonStart2 = rna.substr(i,2);
+        char aa;
+
+        if (codon == "UUU" || codon == "UUC") 
+            aa = 'F';
+        else if (codon == "UUA" || codon == "UUG" || codonStart2 == "CU")
+            aa = 'L';
+        else if (codonStart2 == "AU" && codon.back() != 'G')
+            aa = 'I';
+        else if (codon == "AUG")
+            aa = 'M';
+        else if (codonStart2 == "GU")
+            aa = 'V';
+        else if (codonStart2 == "UC" || codon == "AGU" || codon == "AGC")
+            aa = 'S';
+        else if (codonStart2 == "CC")
+            aa = 'P';
+        else if (codonStart2 == "AC")
+            aa = 'T';
+        else if (codonStart2 == "GC")
+            aa = 'A';
+        else if (codon == "UAU" || codon == "UAC")
+            aa = 'Y';
+        else if (codon == "CAU" || codon == "CAC")
+            aa = 'H';
+        else if (codon == "CAA" || codon == "CAG")
+            aa = 'Q';
+        else if (codon == "AAU" || codon == "AAC")
+            aa = 'N';
+        else if (codon == "AAA" || codon == "AAG")
+            aa = 'K';
+        else if (codon == "GAU" || codon == "GAC")
+            aa == 'D';
+        else if (codon == "GAA" || codon == "GAG")
+            aa = 'E';
+        else if (codon == "UGU" || codon == "UGC")
+            aa = 'C';
+        else if (codon == "UGG")
+            aa = 'W';
+        else if (codonStart2 == "CG" || codon == "AGA" || codon == "AGG")
+            aa = 'R';
+        else if (codonStart2 == "GG")
+            aa = 'G';
+        else if (codon == "UAG" || codon == "UGA" || codon == "UAA" ) {
+            aa = '.';
+            break;
+        } else
+            aa = '?';        
+
+        prot.push_back(aa);
+    }
+
+    return prot;
 }
 
 int main() {
@@ -75,8 +151,10 @@ int main() {
     toupper(lowerToUpper);
     cout << lowerToUpper << "\n"; */
 
-    const std::string myDNAStrand = "CGTCACAGATTAAGGTATACCATT";
-    cout << "CGTCACAGATTAAGGTATACCATT transcribes as: " << transcribe(myDNAStrand) << "\n";
+    // const std::string myDNAStrand = "CGTCACAGATTAAGGTATACCATT";
+    const std::string myDNAStrand = "ATAGCGCGGGTGAGAGGGTAATCAGCCGTGTCCACCAACACAACGCTATCGGGCGATTCTATAAGATTCC";
+    cout << myDNAStrand << " (" << myDNAStrand.size() << " bp) transcribes as: \n" << transcribe(myDNAStrand) 
+        << " and translates as: \n" << translate(transcribe(myDNAStrand)) << "\n";
 
     return 0;
 }
