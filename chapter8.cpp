@@ -35,12 +35,12 @@ void toupper(char &letter) {
     letter -= 32;
 }
 
-std::string transcribe(const std::string &dna) {
+std::string transcribeAntiSense(const std::string &dna) {
     // A -> U, T -> A, C -> G, G -> C
 
     std::string rna;
 
-    for (int i = 0; i < dna.size(); ++i) {
+    for (int i = dna.size() - 1; i >= 0 ; --i) {
         switch (dna[i]) {
             case 65:
                 rna.push_back(85);
@@ -55,7 +55,7 @@ std::string transcribe(const std::string &dna) {
                 rna.push_back(67);
                 break;
             default:
-                cout << "Invalid dna strand: " << dna[i] << ". Input data as ATCG\n";
+                cout << "Warning: skipping invalid dna character: " << dna[i] << " (position " << i << ") \n";
         }
     }
 
@@ -151,10 +151,10 @@ int main() {
     toupper(lowerToUpper);
     cout << lowerToUpper << "\n"; */
 
-    // const std::string myDNAStrand = "CGTCACAGATTAAGGTATACCATT";
-    const std::string myDNAStrand = "ATAGCGCGGGTGAGAGGGTAATCAGCCGTGTCCACCAACACAACGCTATCGGGCGATTCTATAAGATTCC";
-    cout << myDNAStrand << " (" << myDNAStrand.size() << " bp) transcribes as: \n" << transcribe(myDNAStrand) 
-        << " and translates as: \n" << translate(transcribe(myDNAStrand)) << "\n";
+    const std::string myDNAStrand = "CGTCACAGATTAAGGTATACCATT";
+    // const std::string myDNAStrand = "ATAGCGCGGGTGAGAGGGTAATCAGCCGTGTCCACCAACACAACGCTATCGGGCGATTCTATAAGATTCC";
+    cout << myDNAStrand << " (" << myDNAStrand.size() << " bp) transcribes as: \n" << transcribeAntiSense(myDNAStrand) 
+        << " and translates as: \n" << translate(transcribeAntiSense(myDNAStrand)) << "\n";
 
     return 0;
 }
