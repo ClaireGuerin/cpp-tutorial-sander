@@ -58,37 +58,66 @@ void HangmanGame::setSecretWord() {
 bool HangmanGame::guess(char ch) {
     // processes the letter guessed by the user and provides feedback
     // returns false if no more guesses remain or the user guessed the word
+    // print a hint if requested by user with "?"
 
-    // check if the word contains the letter...
-    std::string::size_type found = word.find(ch);
-    if (found == std::string::npos) {
-        --remainingGuesses;
-        std::cout   << "Sorry, wrong guess! You have " 
-                    << remainingGuesses << " guesses remaining.\n";
-        if (remainingGuesses == 0) {
-            std::cout << "Too bad... You lost.\n";
-            return false;
+    if (ch == '?') {
+        if (remainingGuesses < 3 || word.size() - correctLetters.size() < 3) {
+            cout << "Sorry, you cannot request a hint (too few guesses left or too many letters already guessed).\n";
+        } else {
+            --remainingGuesses;
+
+            cout << "Your hint: ";
+
+            bool known = true;
+            int count = 0;
+            std::string::size_type found;
+
+            while (known)
+            {
+                found = correctLetters.find(word[count]);
+                if (found == std::string::npos) {
+                    known = false;
+                    std::cout << word[count] << "\n";
+                } else ++count; 
+            }
+            
         }
-    } else correctLetters.push_back(ch); // ... if so, add it to the correctLetters string
 
-    // show the word for as far as it has been guessed
-    bool isSomeLettersWrong = false;
-    std::cout << "\n\tGuessed so far: ";
-    for (int i = 0; i < word.size(); ++i) {
-        found = correctLetters.find(word[i]);
-        if (found == std::string::npos) {
-            isSomeLettersWrong = true;
-            std::cout << '.';
-        } else std::cout << word[i];
-    }
-    
-    if (!isSomeLettersWrong) {
-        cout << "\n\nCongratulations! You guessed the word."; 
+        return true;
+
     } else {
-        cout << "\n\nPlease try again. ";
-    }
+        // check if the word contains the letter...
+        std::string::size_type found = word.find(ch);
+        if (found == std::string::npos) {
+            --remainingGuesses;
+            cout    << "Sorry, wrong guess! You have " 
+                    << remainingGuesses << " guesses remaining.\n";
+            if (remainingGuesses == 0) {
+                cout << "Too bad... You lost.\n";
+                return false;
+            }
+        } else correctLetters.push_back(ch); // ... if so, add it to the correctLetters string
 
-    return isSomeLettersWrong;
+        // show the word for as far as it has been guessed
+        bool isSomeLettersWrong = false;
+        std::cout << "\n\tGuessed so far: ";
+        for (int i = 0; i < word.size(); ++i) {
+            found = correctLetters.find(word[i]);
+            if (found == std::string::npos) {
+                isSomeLettersWrong = true;
+                std::cout << '.';
+            } else std::cout << word[i];
+        }
+    
+        if (!isSomeLettersWrong) {
+            cout << "\n\nCongratulations! You guessed the word."; 
+        } else {
+            cout << "\n\nPlease try again. ";
+        }
+
+        return isSomeLettersWrong;
+
+    }
 }
 
 void HangmanGame::recycle(const string &filename) {
@@ -141,7 +170,7 @@ int main() {
     // start game
     char ch;
     do {
-        std::cout << "Enter a letter to guess the secret word : ";
+        std::cout << "Enter a letter to guess the secret word or a question mark to request a hint: ";
         std::cin >> ch;
     } while (hangman.guess(ch));
 
