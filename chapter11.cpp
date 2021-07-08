@@ -9,7 +9,8 @@ class HangmanGame {
         void load(const string &);
         void setSecretWord();
         bool guess(char);
-        void recycle();
+        void recycle(const string &);
+        int getRemainingGuesses();
     private:
         vector<std::string> wordList;
         std::string word, correctLetters;
@@ -20,12 +21,12 @@ void HangmanGame::load(const string &filename) {
     // open file with words list
     ifstream ifs(filename);
     if(!ifs.is_open()) {
-        std::cerr << "error: unable to open secret words list\n";
+        cerr << "error: unable to open secret words list\n";
         exit(EXIT_FAILURE);
     }
 
     // read from list and store words in vector
-    std::clog << "loading secret words library from file " << filename << "... \n";
+    clog << "loading secret words library from file " << filename << "... \n";
     for(int i = 0;;) {
         // read from file
         string x;
@@ -82,7 +83,17 @@ bool HangmanGame::guess(char ch) {
     }
     
     if (!isSomeLettersWrong) {
-        cout << "\n\nCongratulations! You guessed the word. Please give us a new word to add to our list of secret words: ";
+        cout << "\n\nCongratulations! You guessed the word."; 
+    } else {
+        cout << "\n\nPlease try again. ";
+    }
+
+    return isSomeLettersWrong;
+}
+
+void HangmanGame::recycle(const string &filename) {
+    if (getRemainingGuesses() > 0) {
+        cout << " Please give us a new word to add to our list of secret words: ";
         string addANewWord;
         cin >> addANewWord;
 
@@ -92,16 +103,33 @@ bool HangmanGame::guess(char ch) {
 
         // Add the new word in place of the guessed word
         wordList[0] = addANewWord;
+    }
+    
+    vector<string> newTmpList = wordList;
+    int i = 0;
 
-    } else {
-        cout << "\n\nPlease try again. ";
+    for (; i < wordList.size() / 2 - 1; ++i) {
+        newTmpList[i] = wordList[i + 1];
     }
 
-    return isSomeLettersWrong;
+    newTmpList[i] = wordList[0];
+    wordList = newTmpList;   
+
+    ofstream ofs(filename); 
+    if(!ofs.is_open()) {
+        std::cerr << "error: unable to open word library file\n";
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < wordList.size(); ++i) {
+        ofs << wordList[i] << "\n";
+    }
 }
 
-void HangmanGame::recycle() {
-    
+// int getRemainingGuesses() const {return remainingGuesses;} // For some reason this doesn't work,
+    // though it was copied directly from Sander's tutorial
+int HangmanGame::getRemainingGuesses() {
+    return remainingGuesses;
 }
 
 int main() {
@@ -116,6 +144,8 @@ int main() {
         std::cout << "Enter a letter to guess the secret word : ";
         std::cin >> ch;
     } while (hangman.guess(ch));
+
+    hangman.recycle("hangman_words.txt");
 
     return 0;
 }
